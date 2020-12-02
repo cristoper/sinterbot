@@ -23,7 +23,7 @@ class Santa:
     def __repr__(self):
         return "%s %s <%s>" % (self.__class__, self.name, self.email)
 
-Blacklist_T = List[Tuple[Santa, Santa]]
+Blacklist_T = List[Tuple[str, str]]
 class Blacklist:
     def __init__(self):
         self._bl: Blacklist_T = []
@@ -37,8 +37,8 @@ class Blacklist:
         s += "}"
         return s
 
-    def add_names(self, names: Tuple[str, str]):
-        self._bl.append(names)
+    def add_emails(self, emails: Tuple[str, str]):
+        self._bl.append(emails)
 
     def get_bl(self) -> Blacklist_T:
         return self._bl
@@ -50,7 +50,7 @@ class ConfFile:
 
         # Set defaults
         self.m = 2
-        self.santas = []
+        self.santas: List[Santa] = []
         self.bl = Blacklist()
         self.smtpport = 587
         self.smtppass = os.environ.get("sinter_smtp_pass")
@@ -100,7 +100,7 @@ class ConfFile:
                     # "email1@domain.tld,email2@domain.tld"
                     first, second = val.split(',', 2)
                     second = second.strip()
-                    self.bl.add_names((first, second))
+                    self.bl.add_emails((first, second))
                 else:
                     # no pre-defined prefix, assume this is a santa name
                     self.santas.append(Santa(g[0], val))
