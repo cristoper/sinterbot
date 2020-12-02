@@ -1,7 +1,9 @@
 import os
 import re
 import logging
-from typing import List, Tuple
+import random
+import sinterbot.algorithms as algo
+from typing import List, Tuple, Optional
 # TODO enable/disable logging
 log = logging.getLogger(__name__)
 
@@ -69,6 +71,7 @@ class ConfFile:
         self.path = pathlib.Path(path).expanduser()
 
         # Set defaults
+        self.derangement: Optional[algo.Permutation] = None
         self.m = 2
         self.santas = SantaList()
         self.bl = Blacklist()
@@ -83,6 +86,23 @@ class ConfFile:
         c.validate()
         return c
 
+    def derange(self) -> Optional[algo.Permutation]:
+        """Creates a derangment of santas"""
+        emails = self.santas.emails()
+        n = len(emails)
+        if n < 2: return None
+        m = self.m
+        if m < 2:
+            # if m == 1, we want only a single cycle which is the same as m = n
+            m = n
+        bl = []
+        for pair in self.bl.list:
+            bl.append((emails.index(pair[0]), emails.index(pair[1])))
+        #TODO: use more efficient algorithm
+        valid = algo.generate_all(n, m, bl)
+        self.derangement = random.choice(valid)
+        return self.derangement
+
     def validate(self):
         """
         Raises an exception of type ValidateError (with informative __str__) if
@@ -90,6 +110,9 @@ class ConfFile:
         """
         if len(self.santas.santas) < 2:
             raise ValidateError("Config file must list at least two santas")
+
+        if self.m < 1:
+            raise ValidateError("m constraint must be at least 1")
 
         # make sure all santas have unique email addresses
         emails = self.santas.emails()
@@ -104,6 +127,7 @@ class ConfFile:
                     raise ValidateError("Black list contains email not listed in santas: %s" % email)
 
         # TODO: validate constraints allow for at least 1 valid derangement!
+        # TODO: if derangement is populated, check that it meets constraints!
 
 
     def parse(self):
@@ -147,7 +171,7 @@ class ConfFile:
                 elif prefix == "smtppass":
                     self.smtppass = val
                 elif prefix == "m":
-                    self.m = val
+                    self.m = int(val)
                 elif prefix == "!":
                     # black lists are given as comma separated pairs with
                     # optional space after comma
