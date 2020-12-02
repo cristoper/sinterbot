@@ -13,6 +13,11 @@ class TestParse(unittest.TestCase):
         self.assertEqual(len(c.santas.santas), 5)
         self.assertEqual(len(c.santas.emails()), 5)
 
+    def test_wrong_blacklist(self):
+        """Test that typo in blacklist raises exception"""
+        with self.assertRaises(sinterbot.config.ValidateError):
+            sinterbot.config.ConfFile.parse_and_validate('sinterbot/test/wrongbl.conf')
+
     def test_missing_colon(self):
         """Test that malformed config file raises exception"""
         with self.assertRaises(sinterbot.config.ParseError) as err:
