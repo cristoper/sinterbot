@@ -57,10 +57,20 @@ def check_min_cycles(perm: Permutation, m: int) -> bool:
     Returns true if perm does not contain any cycles of length less than m (so
     when m=2, returns true only for derangements)
     """
-    cycles = decompose(perm)
-    for c in cycles:
-        if not c or len(c) < m:
-            return False
+    if m < 2: return True
+
+    unvisited = list(perm) # copy input to mutable list
+
+    # Visit all cycles until we find one less than length m (or we visit them all)
+    while len(unvisited):
+        first = unvisited.pop(0)
+        nextval = perm[first]
+        cur = 1
+        while nextval != first:
+            cur += 1
+            unvisited.pop(unvisited.index(nextval))
+            nextval = perm[nextval]
+        if cur < m: return False
     return True
 
 def check_blacklist(perm: Permutation, bl: Optional[Blacklist]) -> bool:
@@ -76,12 +86,25 @@ def check_blacklist(perm: Permutation, bl: Optional[Blacklist]) -> bool:
 
     return True
 
-def check_constraints(perm: Permutation, m: int, bl: Optional[Blacklist]) -> bool:
-    if not check_min_cycles(perm, m):
-        return False
-    if not check_blacklist(perm, bl):
-        return False
+def check_deranged(perm: Permutation) -> bool:
+    """
+    Returns True if perm is deranged. Faster than check_min_cycles when m=2.
+    """
+    for i, el in enumerate(perm):
+        if el == i: return False
     return True
+
+def check_constraints(perm: Permutation, m: int, bl: Optional[Blacklist]) -> bool:
+    if m < 2: m = 2
+    if m == 2:
+        # faster
+        if not check_deranged(perm):
+            return False
+    else:
+        # slower but can handle any m
+        if not check_min_cycles(perm, m):
+            return False
+    return check_blacklist(perm, bl)
 
 def generate_all(n: int, m: int, bl:Optional[Blacklist]) -> List[Permutation]:
     # list of valid assignments
