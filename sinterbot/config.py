@@ -12,7 +12,8 @@ except ImportError as e:
 
 class ParseError(Exception):
     """Used for exceptions raised during parsing"""
-    pass
+    def __init__(self, lineno: int):
+        self.line = lineno
 
 class Santa:
     def __init__(self, name, email):
@@ -62,6 +63,7 @@ class ConfFile:
 
         with self.path.open() as f:
             for lineno, line in enumerate(f):
+                lineno += 1 # start lines at 1
                 if line == "\n": continue
                 if CommentPat.match(line): continue
                 m = LinePat.match(line)
@@ -69,17 +71,16 @@ class ConfFile:
                 # Error checking
                 # we raise exceptions on errors to make sure program does not
                 # continue with unexpected secret santa list
-                # TODO: improve error messages
                 if m is None:
                     log.error("Could not parse line number: %d" % lineno)
-                    raise ParseError
+                    raise ParseError(lineno)
                 g = m.groups()
                 if len(g) != 2:
                     log.error("Error parsing line number: %d" % lineno)
-                    raise ParseError
+                    raise ParseError(lineno)
                 if not len(g[1]):
                     log.error("Missing value on line: %d" % lineno)
-                    raise ParseError
+                    raise ParseError(lineno)
                 
                 # Get the value for each type of line
                 prefix, val = g[0].casefold(), g[1]

@@ -122,7 +122,7 @@ def sub_factorial(n: int):
     return (Decimal(math.factorial(n))/Decimal(math.e)).to_integral_exact()
 
 def random_derangement(n):
-    A = range(n)
+    A = list(range(n))
     marked = [False] * n
     i = u = n-1
     while u >= 1:
