@@ -20,6 +20,23 @@ class ValidateError(Exception):
     def __str__(self):
         return self.msg
 
+Blacklist_T = List[Tuple[str, str]]
+class Blacklist:
+    def __init__(self):
+        self.list: Blacklist_T = []
+
+    def __repr__(self):
+        s = "%s: {" % self.__class__
+        for i, pair in enumerate(self.list):
+            if i > 0:
+                s += ", "
+            s += "(" + ", ".join(pair) + ")"
+        s += "}"
+        return s
+
+    def add_emails(self, emails: Tuple[str, str]):
+        self.list.append(emails)
+
 class Santa:
     def __init__(self, name, email):
         self.name = name
@@ -43,23 +60,6 @@ class SantaList:
     def add(self, santa):
         self.santas.append(santa)
 
-Blacklist_T = List[Tuple[str, str]]
-class Blacklist:
-    def __init__(self):
-        self.list: Blacklist_T = []
-
-    def __repr__(self):
-        s = "%s: {" % self.__class__
-        for i, pair in enumerate(self.list):
-            if i > 0:
-                s += ", "
-            s += "(" + ", ".join(pair) + ")"
-        s += "}"
-        return s
-
-    def add_emails(self, emails: Tuple[str, str]):
-        self.list.append(emails)
-
 class SinterConf:
     def __init__(self, path: str):
         self.path = path
@@ -78,20 +78,30 @@ class SinterConf:
         c.validate()
         return c
 
+    def bl_to_numeric(self) -> algo.Blacklist:
+        """
+        Returns blacklist (list of tuple of email addresses) as a
+        algorithms.Blacklist (list of tuple of integers)
+        """
+        emails = self.santas.emails()
+        numeric = []
+        for pair in self.bl.list:
+            numeric.append((emails.index(pair[0]), emails.index(pair[1])))
+        return numeric
+
     def derange(self) -> Optional[algo.Permutation]:
         """Creates a derangment of santas"""
         emails = self.santas.emails()
         n = len(emails)
         if n < 2: return None
-        m = self.m
-        if m < 2:
+        if self.m < 2:
             # if m == 1, we want only a single cycle which is the same as m = n
-            m = n
-        bl = []
+            self.m = n
+        bl = self.bl_to_numeric()
         for pair in self.bl.list:
             bl.append((emails.index(pair[0]), emails.index(pair[1])))
         #TODO: use more efficient algorithm
-        valid = algo.generate_all(n, m, bl)
+        valid = algo.generate_all(n, self.m, bl)
         self.derangement = random.choice(valid)
         return self.derangement
 
@@ -118,9 +128,14 @@ class SinterConf:
                 if email.casefold() not in self.santas.emails():
                     raise ValidateError("Black list contains email not listed in santas: %s" % email)
 
-        # TODO: validate constraints allow for at least 1 valid derangement!
-        # TODO: if derangement is populated, check that it meets constraints!
+        # validate derangement against constraints
+        if self.derangement:
+            if not algo.check_constraints(self.derangement, self.m,
+                    self.bl_to_numeric()):
+                raise ValidateError("Derangement fails validation: %s" %
+                        self.derangement)
 
+        # TODO: validate constraints allow for at least 1 valid derangement!
 
     def parse(self):
         """Parses the file at self.path and populates instance variables.
