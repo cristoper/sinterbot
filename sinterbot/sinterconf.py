@@ -1,5 +1,7 @@
-import os
 import sinterbot.config as config
+import ast
+import pathlib
+import datetime
 import random
 import sinterbot.algorithms as algo
 from typing import List, Tuple, Optional, Dict
@@ -24,6 +26,24 @@ Blacklist_T = List[Tuple[str, str]]
 class Blacklist:
     def __init__(self):
         self.list: Blacklist_T = []
+        self._iterindex = 0
+
+    def __len__(self):
+        return len(self.list)
+
+    def __getitem__(self, key):
+        return self.list[key]
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        try:
+            result = self.list[self._iterindex]
+        except IndexError:
+            raise StopIteration
+        self._iterindex += 1
+        return result
 
     def __repr__(self):
         s = "%s: {" % self.__class__
@@ -125,6 +145,29 @@ class SinterConf:
         self.derangement = random.choice(valid)
         return self.derangement
 
+    def save_derangement(self):
+        """
+        Save the derangement to disk, first calling `derange()` if needed. The
+        file will be the same as the input configuration file but with the
+        permutation data included and with the extension changed to 'deranged'.
+        If that file already exists, save_derangement raises an exception.
+        """
+        if self.derangement is None:
+            self.derange()
+        dpath = pathlib.Path(self.path)
+        dpath = dpath.with_suffix('.deranged')
+        # mode='x' will raise exception if file already exists
+        with dpath.open(mode='x') as f:
+            f.write("# This .derangement file was produced by Sinterbot2020\n")
+            f.write("# %s\n" % datetime.datetime.now())
+
+            for santa in self.santas:
+                f.write("%s:%s\n" % (santa.name, santa.email))
+            for b in self.bl:
+                f.write("!:%s,%s\n" % (b[0], b[1]))
+            f.write("mincycle:%s\n" % self.mincycle)
+            f.write("derangement:%s" % repr(self.derangement))
+
     def get_assignments(self) -> Dict[Santa, Santa]:
         """
         Returns a dict of secret santa assignments based on the value of
@@ -170,10 +213,13 @@ class SinterConf:
 
         # validate derangement against constraints
         if self.derangement:
+            if len(self.derangement) != len(self.santas):
+                raise ValidateError("Derangement length does not match length of santa list")
+
             if not algo.check_constraints(self.derangement, self.mincycle,
                     self.bl_to_numeric()):
                 raise ValidateError("Derangement fails validation: %s" %
-                        self.derangement)
+                        repr(self.derangement))
 
         # TODO: validate constraints allow for at least 1 valid derangement!
 
@@ -202,6 +248,8 @@ class SinterConf:
                 first, second = val.split(',', 2)
                 second = second.strip()
                 self.bl.add_emails((first, second))
+            elif prefix == "derangement":
+                self.derangement = ast.literal_eval(val)
             else:
                 # no pre-defined prefix, assume this is a santa name
                 self.santas.add(Santa(kv.key, val))
