@@ -1,11 +1,10 @@
 import unittest
-import sinterbot.algorithms as algo
 import sinterbot.sinterconf as config
 import sinterbot.smtpconf as smtpconfig
 
 class TestParseSMTP(unittest.TestCase):
     def test_successful_parse(self):
-        c = smtpconfig.SMTPConf('samplesmtp.conf')
+        c = smtpconfig.SMTPConf('smtpsample.conf')
         c.parse()
         self.assertEqual(c.server, 'smtp.email.tld')
         self.assertEqual(c.user, 'smtpuser@email.tld')
