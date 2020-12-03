@@ -251,7 +251,8 @@ class SinterConf:
                 self.bl.add_emails((first, second))
             elif prefix == "derangement":
                 self.derangement = ast.literal_eval(val)
+                if not isinstance(self.derangement, tuple):
+                    raise ParseError(kv.lineno)
             else:
                 # no pre-defined prefix, assume this is a santa name
                 self.santas.add(Santa(kv.key, val))
-
