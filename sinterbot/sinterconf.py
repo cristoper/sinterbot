@@ -1,6 +1,7 @@
 from sinterbot import config
 import ast
 import pathlib
+import shutil
 import re
 import random
 import sinterbot.algorithms as algo
@@ -166,6 +167,7 @@ class SinterConf:
                     if not deranged_re.match(line):
                         dest.write(line)
                 dest.write("derangement:%s" % repr(self.derangement))
+        shutil.move(dpath, spath)
 
     def get_assignments(self) -> Dict[Santa, Santa]:
         """

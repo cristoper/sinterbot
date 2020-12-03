@@ -40,8 +40,7 @@ class TestParse(unittest.TestCase):
         self.assertEqual(err.exception.line, 7)
 
 class TestDerangeSave(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
+    def setUp(self):
         # copy test.conf so we can modify it and test that it worked
         shutil.copy(TESTDIR+'test.conf', TESTDIR+'test.deranged')
 
@@ -50,7 +49,7 @@ class TestDerangeSave(unittest.TestCase):
         Creates, saves, then reads a derangement file and asserts that it is
         equal to the deranged input config file.
         """
-        c = config.SinterConf.parse_and_validate(TESTDIR+'test.conf')
+        c = config.SinterConf.parse_and_validate(TESTDIR+'test.deranged')
         p = c.derange()
         c.validate()
         self.assertEqual(len(p), 5)
