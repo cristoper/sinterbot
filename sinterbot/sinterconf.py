@@ -75,7 +75,7 @@ class SinterConf:
 
         # Set defaults
         self.derangement: Optional[algo.Permutation] = None
-        self.m = 2 # minimum cycle length constraint
+        self.mincycle = 2 # minimum cycle length constraint
         self.santas = SantaList()
         self.bl = Blacklist()
 
@@ -102,12 +102,9 @@ class SinterConf:
         """Creates a derangment of santas"""
         n = len(self.santas)
         if n < 2: return None
-        if self.m < 2:
-            # if m == 1, we want only a single cycle which is the same as m = n
-            self.m = n
         bl = self.bl_to_numeric()
         #TODO: use more efficient algorithm
-        valid = algo.generate_all(n, self.m, bl)
+        valid = algo.generate_all(n, self.mincycle, bl)
         self.derangement = random.choice(valid)
         return self.derangement
 
@@ -119,8 +116,10 @@ class SinterConf:
         if len(self.santas.santas) < 2:
             raise ValidateError("Config file must list at least two santas")
 
-        if self.m < 1:
-            raise ValidateError("m constraint must be at least 1")
+        if self.mincycle < 2:
+            log.error("mincycle set to %d. Using default value of 2." % self.mincycle)
+            self.mincycle = 2
+            #raise ValidateError("m constraint must be at least 2")
 
         # make sure all santas have unique email addresses
         emails = self.santas.emails()
@@ -136,7 +135,7 @@ class SinterConf:
 
         # validate derangement against constraints
         if self.derangement:
-            if not algo.check_constraints(self.derangement, self.m,
+            if not algo.check_constraints(self.derangement, self.mincycle,
                     self.bl_to_numeric()):
                 raise ValidateError("Derangement fails validation: %s" %
                         self.derangement)
@@ -159,8 +158,8 @@ class SinterConf:
 
             # Get the value for each type of line
             prefix, val = kv.key.casefold(), kv.value
-            if prefix == "m":
-                self.m = int(val)
+            if prefix == "mincycle":
+                self.mincycle = int(val)
             elif prefix == "!":
                 # black lists are given as comma separated pairs with
                 # optional space after comma

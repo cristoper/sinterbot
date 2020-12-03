@@ -15,7 +15,7 @@ class TestParseSMTP(unittest.TestCase):
 class TestParse(unittest.TestCase):
     def test_successful_parse(self):
         c = config.SinterConf.parse_and_validate('sample.conf')
-        self.assertEqual(c.m, 1)
+        self.assertEqual(c.mincycle, 3)
         self.assertEqual(len(c.bl.list), 2)
         self.assertEqual(len(c.santas.santas), 5)
         self.assertEqual(len(c.santas.emails()), 5)
