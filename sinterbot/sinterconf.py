@@ -113,13 +113,17 @@ class SinterConf:
         Raises an exception of type ValidateError (with informative __str__) if
         this ConfFile fails its consistency checks.
         """
-        if len(self.santas.santas) < 2:
+        n = len(self.santas)
+        if n < 2:
             raise ValidateError("Config file must list at least two santas")
 
         if self.mincycle < 2:
             log.error("mincycle set to %d. Using default value of 2." % self.mincycle)
             self.mincycle = 2
             #raise ValidateError("m constraint must be at least 2")
+
+        if self.mincycle > n:
+            raise ValidateError("mincycle (%d) is greater than number of santas (%d)." % (self.mincycle, n))
 
         # make sure all santas have unique email addresses
         emails = self.santas.emails()

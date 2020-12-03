@@ -25,6 +25,12 @@ class TestParse(unittest.TestCase):
         with self.assertRaises(config.ValidateError):
             config.SinterConf.parse_and_validate('sinterbot/test/wrongbl.conf')
 
+    def test_big_mincycle(self):
+        """Test that a mincycle > n will not validate"""
+        with self.assertRaises(config.ValidateError):
+            c = config.SinterConf.parse_and_validate('sinterbot/test/bigm.conf')
+
+
     def test_missing_colon(self):
         """Test that malformed config file raises exception"""
         with self.assertRaises(config.ParseError) as err:
@@ -38,7 +44,6 @@ class TestDerange(unittest.TestCase):
         p = c.derange()
         c.validate()
         self.assertEqual(len(p), 5)
-        print(p, algo.decompose(p))
 
 
 if __name__ == '__main__':
