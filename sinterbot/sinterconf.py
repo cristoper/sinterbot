@@ -1,4 +1,4 @@
-import sinterbot.config as config
+from sinterbot import config
 import ast
 import pathlib
 import datetime
