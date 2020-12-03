@@ -16,22 +16,29 @@ def parse_args():
 
     viewparser = subparsers.add_parser('view', help='Show the list of secret santa assignments.')
     viewparser.add_argument('path', help='Path to .deranged file')
+    viewparser.add_argument('-u', '--user', dest='email', help='Show only the recipient assigned to the given email address(es).', action='append')
     return parser.parse_args()
 
-
-def derange(args: argparse.Namespace):
-    path = args.path
+def parse_config(path: str) -> config.SinterConf:
+    """
+    Parse the config file at path. On failure log error and quit.
+    """
     try:
         c = config.SinterConf.parse_and_validate(path)
     except FileNotFoundError:
         logging.error("Could not find file at path: %s" % path)
-        return
+        sys.exit(-1)
     except config.ValidateError as e:
         logging.error(e)
-        return
+        sys.exit(-1)
     except config.ParseError as e:
         logging.error("Parse error on line %d" % e.line)
-        return
+        sys.exit(-1)
+    return c
+
+def derange(args: argparse.Namespace):
+    path = args.path
+    c = parse_config(path)
     if c.derangement:
         if not args.force:
             print("Input config (%s) already deranged. Pass the --force option if you'd like to modify it anyway." % path)
@@ -43,8 +50,19 @@ def derange(args: argparse.Namespace):
 
 def view(args: argparse.Namespace):
     path = args.path
-    c = config.SinterConf.parse_and_validate(path)
-    print(c.assignments_str())
+    c = parse_config(path)
+    if not c.derangement:
+        print("No derangement found in config file. First run `sinterbot derange %s`" % path)
+        return
+    if args.email:
+        emails = args.email
+    else:
+        emails = c.santas.emails()
+    secrets = c.get_assignments()
+    for santa, recip in secrets.items():
+        if santa.email not in emails: continue
+        print("%s -> %s" %(santa, recip))
+    return
     
 
 def main():

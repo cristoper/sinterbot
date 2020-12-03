@@ -66,6 +66,9 @@ class Santa:
     def __repr__(self):
         return "%s %s <%s>" % (self.__class__, self.name, self.email)
 
+    def __str__(self):
+        return "%s <%s>" % (self.name, self.email)
+
 class SantaList:
     def __init__(self, santas: List[Santa] = None):
         if santas is None: santas = []
@@ -103,15 +106,6 @@ class SinterConf:
         self.mincycle = 2 # minimum cycle length constraint
         self.santas = SantaList()
         self.bl = Blacklist()
-
-    def assignments_str(self):
-        r = str()
-        if self.derangement:
-            assignments = self.get_assignments()
-            for santa, recip in assignments.items():
-                r += "%s <%s> -> %s <%s>\n" % (santa.name, santa.email,
-                        recip.name, recip.email)
-        return r
 
     @staticmethod
     def parse_and_validate(path: str):
