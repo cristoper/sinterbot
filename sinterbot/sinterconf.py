@@ -50,6 +50,12 @@ class SantaList:
         if santas is None: santas = []
         self.santas = santas
 
+    def __len__(self):
+        return len(self.santas)
+
+    def __contains__(self, email):
+        return email in self.emails()
+
     def emails(self):
         """Return list of all santa emails"""
         emails = []
@@ -61,12 +67,15 @@ class SantaList:
         self.santas.append(santa)
 
 class SinterConf:
+    """
+    Should use the parse_and_validate() factory method instead of initializing directly
+    """
     def __init__(self, path: str):
         self.path = path
 
         # Set defaults
         self.derangement: Optional[algo.Permutation] = None
-        self.m = 2
+        self.m = 2 # minimum cycle length constraint
         self.santas = SantaList()
         self.bl = Blacklist()
 
@@ -91,15 +100,12 @@ class SinterConf:
 
     def derange(self) -> Optional[algo.Permutation]:
         """Creates a derangment of santas"""
-        emails = self.santas.emails()
-        n = len(emails)
+        n = len(self.santas)
         if n < 2: return None
         if self.m < 2:
             # if m == 1, we want only a single cycle which is the same as m = n
             self.m = n
         bl = self.bl_to_numeric()
-        for pair in self.bl.list:
-            bl.append((emails.index(pair[0]), emails.index(pair[1])))
         #TODO: use more efficient algorithm
         valid = algo.generate_all(n, self.m, bl)
         self.derangement = random.choice(valid)
