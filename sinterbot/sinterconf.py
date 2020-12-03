@@ -153,15 +153,7 @@ class SinterConf:
 
             # Get the value for each type of line
             prefix, val = kv.key.casefold(), kv.value
-            if prefix == "smtpserver":
-                self.smtpserver = val
-            elif prefix == "smtpport":
-                self.smtpport = val
-            elif prefix == "smtpuser":
-                self.smtpuser = val
-            elif prefix == "smtppass":
-                self.smtppass = val
-            elif prefix == "m":
+            if prefix == "m":
                 self.m = int(val)
             elif prefix == "!":
                 # black lists are given as comma separated pairs with

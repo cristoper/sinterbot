@@ -1,14 +1,20 @@
 import unittest
 import sinterbot.algorithms as algo
 import sinterbot.sinterconf as config
+import sinterbot.smtpconf as smtpconfig
+
+class TestParseSMTP(unittest.TestCase):
+    def test_successful_parse(self):
+        c = smtpconfig.SMTPConf('samplesmtp.conf')
+        c.parse()
+        self.assertEqual(c.server, 'smtp.email.tld')
+        self.assertEqual(c.user, 'smtpuser@email.tld')
+        self.assertEqual(c.password, 'secret')
+        self.assertEqual(c.port, '587')
 
 class TestParse(unittest.TestCase):
     def test_successful_parse(self):
         c = config.SinterConf.parse_and_validate('sample.conf')
-        self.assertEqual(c.smtpserver, 'smtp.email.tld')
-        self.assertEqual(c.smtpuser, 'smtpuser@email.tld')
-        self.assertEqual(c.smtppass, 'secret')
-        self.assertEqual(c.smtpport, '587')
         self.assertEqual(c.m, 1)
         self.assertEqual(len(c.bl.list), 2)
         self.assertEqual(len(c.santas.santas), 5)

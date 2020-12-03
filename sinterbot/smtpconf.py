@@ -11,11 +11,12 @@ class ParseError(Exception):
         self.line = lineno
 
 class SMTPConf:
-    def __init__(self):
+    def __init__(self, path: str):
+        self.path = path
         self.server: str = ""
         self.port = 587
         self.user: str = ""
-        self.password: str = os.environ.get("sinter_smtp_pass")
+        self.password = os.environ.get("sinter_smtp_pass")
 
     def parse(self):
         """
