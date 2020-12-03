@@ -159,12 +159,12 @@ class SinterConf:
         # derangement to the end of the file, and finally replace the old file
         # with the new one.
         spath = pathlib.Path(self.path).expanduser()
-        dpath = spath.with_suffix(".deranged")
-        deranged_re = re.compile(r'^\s+derangement:')
+        dpath = pathlib.Path(self.path + ".deranged").expanduser()
+        deranged_re = re.compile(r'^\s*derangement:')
         with spath.open(mode='r') as src:
             with dpath.open(mode='w') as dest:
                 for line in src:
-                    if not deranged_re.match(line):
+                    if deranged_re.match(line) is None:
                         dest.write(line)
                 dest.write("derangement:%s" % repr(self.derangement))
         shutil.move(dpath, spath)
