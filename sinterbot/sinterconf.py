@@ -2,7 +2,7 @@ import os
 import sinterbot.config as config
 import random
 import sinterbot.algorithms as algo
-from typing import List, Tuple, Optional
+from typing import List, Tuple, Optional, Dict
 import logging
 # TODO enable/disable logging
 log = logging.getLogger(__name__)
@@ -55,6 +55,10 @@ class SantaList:
 
     def __contains__(self, email):
         return email in self.emails()
+    
+    def __getitem__(self, key):
+        #TODO allow getting by email address str?
+        return self.santas[key]
 
     def emails(self):
         """Return list of all santa emails"""
@@ -79,6 +83,15 @@ class SinterConf:
         self.santas = SantaList()
         self.bl = Blacklist()
 
+    def assignments_str(self):
+        r = str()
+        if self.derangement:
+            assignments = self.get_assignments()
+            for santa, recip in assignments.items():
+                r += "%s <%s> -> %s <%s>\n" % (santa.name, santa.email,
+                        recip.name, recip.email)
+        return r
+
     @staticmethod
     def parse_and_validate(path: str):
         """Factory which parses and validates the config file at path"""
@@ -99,7 +112,11 @@ class SinterConf:
         return numeric
 
     def derange(self) -> Optional[algo.Permutation]:
-        """Creates a derangment of santas"""
+        """
+        Creates a derangment of santas and stores it in the derangement
+        instance variable. You must call parse() and should call validate() (or
+        parse_and_validate()) before creating the derangement.
+        """
         n = len(self.santas)
         if n < 2: return None
         bl = self.bl_to_numeric()
@@ -107,6 +124,20 @@ class SinterConf:
         valid = algo.generate_all(n, self.mincycle, bl)
         self.derangement = random.choice(valid)
         return self.derangement
+
+    def get_assignments(self) -> Dict[Santa, Santa]:
+        """
+        Returns a dict of secret santa assignments based on the value of
+        self.derangement. If self.derangement is empty, get_assignments will
+        first call derange() to populate it.
+        """
+        if self.derangement is None:
+            self.derange()
+        assert self.derangement is not None # make mypy happy
+        assignment = {}
+        for santa, recipient in enumerate(self.derangement):
+            assignment[self.santas[santa]] = self.santas[recipient]
+        return assignment
 
     def validate(self):
         """

@@ -42,6 +42,7 @@ class TestDerange(unittest.TestCase):
         c = config.SinterConf.parse_and_validate('sample.conf')
         p = c.derange()
         c.validate()
+        print(c.assignments_str())
         self.assertEqual(len(p), 5)
 
 
