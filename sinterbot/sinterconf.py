@@ -1,7 +1,7 @@
 from sinterbot import config
 import ast
 import pathlib
-import datetime
+import re
 import random
 import sinterbot.algorithms as algo
 from typing import List, Tuple, Optional, Dict
@@ -147,26 +147,25 @@ class SinterConf:
 
     def save_derangement(self):
         """
-        Save the derangement to disk, first calling `derange()` if needed. The
-        file will be the same as the input configuration file but with the
-        permutation data included and with the extension changed to 'deranged'.
-        If that file already exists, save_derangement raises an exception.
+        Save the derangement to the config file, first calling `derange()` if
+        needed.
         """
         if self.derangement is None:
             self.derange()
-        dpath = pathlib.Path(self.path)
-        dpath = dpath.with_suffix('.deranged')
-        # mode='x' will raise exception if file already exists
-        with dpath.open(mode='x') as f:
-            f.write("# This .derangement file was produced by Sinterbot2020\n")
-            f.write("# %s\n" % datetime.datetime.now())
 
-            for santa in self.santas:
-                f.write("%s:%s\n" % (santa.name, santa.email))
-            for b in self.bl:
-                f.write("!:%s,%s\n" % (b[0], b[1]))
-            f.write("mincycle:%s\n" % self.mincycle)
-            f.write("derangement:%s" % repr(self.derangement))
+        # We first copy all the non 'derangement:' lines from existing config
+        # file to a tmp file with a .deranged extension, and then write the new
+        # derangement to the end of the file, and finally replace the old file
+        # with the new one.
+        spath = pathlib.Path(self.path).expanduser()
+        dpath = spath.with_suffix(".deranged")
+        deranged_re = re.compile(r'^\s+derangement:')
+        with spath.open(mode='r') as src:
+            with dpath.open(mode='w') as dest:
+                for line in src:
+                    if not deranged_re.match(line):
+                        dest.write(line)
+                dest.write("derangement:%s" % repr(self.derangement))
 
     def get_assignments(self) -> Dict[Santa, Santa]:
         """

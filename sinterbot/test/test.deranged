@@ -1,0 +1,33 @@
+# This is an example configuration file for SinterBot2020. The configuration
+# file contains the list of secret santa participants and other options. It is
+# processed by the `sinterbot generate` command to produce a random derangement
+# in a new file; invoking the `sinterbot send` command on the deranged file
+# will then send (or resend) an email to each participant informing them who
+# their secret santa is.
+
+# If a line is blank or the first non-whitespace character is '#' then it is ignored.
+
+## Santas ##
+#
+# Participants are listed in the form "name: email". The name is for display
+# only and need not be unique; the email must be unique:
+
+Santa A: user1@email.tld
+Santa B: user2@email.tld
+Santa C: user3@email.tld
+Santa D: user4@email.tld
+Santa E: user5@email.tld
+
+## Constraints ##
+#
+# A line beginning with 'mincycle:' specifies a minimum cycle constraint. The
+# default is 2; if it is set to a value less than 2 it will be ignored.
+mincycle:3
+
+# A line beginning with '!:' indicates a blacklist constraint. It must be
+# followed by two comma-separated email addresses from the Santas list. The
+# blacklist constraint guarantees that the generated secret santa assignment
+# will not assign either Santa in the list to each other.
+!:user2@email.tld,user4@email.tld
+!:user2@email.tld,user1@email.tld
+derangement:(3, 2, 0, 4, 1)

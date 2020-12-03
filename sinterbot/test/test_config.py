@@ -1,7 +1,9 @@
 import unittest
-import os
+import shutil
 import sinterbot.sinterconf as config
 import sinterbot.smtpconf as smtpconfig
+
+TESTDIR = 'sinterbot/test/'
 
 class TestParseSMTP(unittest.TestCase):
     def test_successful_parse(self):
@@ -14,7 +16,7 @@ class TestParseSMTP(unittest.TestCase):
 
 class TestParse(unittest.TestCase):
     def test_successful_parse(self):
-        c = config.SinterConf.parse_and_validate('sample.conf')
+        c = config.SinterConf.parse_and_validate(TESTDIR+'test.conf')
         self.assertEqual(c.mincycle, 3)
         self.assertEqual(len(c.bl.list), 2)
         self.assertEqual(len(c.santas.santas), 5)
@@ -23,44 +25,37 @@ class TestParse(unittest.TestCase):
     def test_wrong_blacklist(self):
         """Test that typo in blacklist raises exception"""
         with self.assertRaises(config.ValidateError):
-            config.SinterConf.parse_and_validate('sinterbot/test/wrongbl.conf')
+            config.SinterConf.parse_and_validate(TESTDIR+'wrongbl.conf')
 
     def test_big_mincycle(self):
         """Test that a mincycle > n will not validate"""
         with self.assertRaises(config.ValidateError):
-            config.SinterConf.parse_and_validate('sinterbot/test/bigm.conf')
+            config.SinterConf.parse_and_validate(TESTDIR+'bigm.conf')
 
     def test_missing_colon(self):
         """Test that malformed config file raises exception"""
         with self.assertRaises(config.ParseError) as err:
-            c = config.SinterConf('sinterbot/test/malformed.conf')
+            c = config.SinterConf(TESTDIR+'malformed.conf')
             c.parse()
         self.assertEqual(err.exception.line, 7)
 
 class TestDerangeSave(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        if os.path.isfile('sample.deranged'):
-            os.unlink('sample.deranged')
-
-    @classmethod
-    def tearDownClass(cls):
-        if os.path.isfile('sample.deranged'):
-            return
-            # Leave it for debugging help
-            #os.unlink('sample.deranged')
+        # copy test.conf so we can modify it and test that it worked
+        shutil.copy(TESTDIR+'test.conf', TESTDIR+'test.deranged')
 
     def test_save_derangement(self):
         """
         Creates, saves, then reads a derangement file and asserts that it is
         equal to the deranged input config file.
         """
-        c = config.SinterConf.parse_and_validate('sample.conf')
+        c = config.SinterConf.parse_and_validate(TESTDIR+'test.conf')
         p = c.derange()
         c.validate()
         self.assertEqual(len(p), 5)
         c.save_derangement()
-        d = config.SinterConf.parse_and_validate('sample.deranged')
+        d = config.SinterConf.parse_and_validate(TESTDIR+'test.deranged')
         self.assertEqual(c.mincycle, d.mincycle)
         self.assertEqual(len(c.bl), len(d.bl))
         for i in range(len(c.bl)):
@@ -75,14 +70,14 @@ class TestDerangeSave(unittest.TestCase):
         Test that a .deranged file with a wrong derangement fails validation.
         """
         with self.assertRaises(config.ValidateError):
-            config.SinterConf.parse_and_validate('sinterbot/test/badderangement.conf')
+            config.SinterConf.parse_and_validate(TESTDIR+'badderangement.conf')
 
     def test_missing_santa(self):
         """
         Test that a .deranged file with a missing santa fails validation.
         """
         with self.assertRaises(config.ValidateError):
-            config.SinterConf.parse_and_validate('sinterbot/test/missingemail.derangement')
+            config.SinterConf.parse_and_validate(TESTDIR+'missingemail.derangement')
 
 
 
