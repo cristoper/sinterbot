@@ -3,7 +3,7 @@ import shutil
 import sinterbot.sinterconf as config
 import sinterbot.smtpconf as smtpconfig
 
-TESTDIR = 'sinterbot/test/'
+TESTDIR = 'test/'
 
 class TestParseSMTP(unittest.TestCase):
     def test_successful_parse(self):
