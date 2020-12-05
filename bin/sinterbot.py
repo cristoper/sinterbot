@@ -59,9 +59,18 @@ def view(args: argparse.Namespace):
     else:
         emails = c.santas.emails()
     secrets = c.get_assignments()
-    for santa, recip in secrets.items():
+    santas = secrets.items()
+    # Find longest santa
+    max_len = 0
+    for santa, recip in santas:
+        l = len(santa.name) + len(santa.email)
+        if l > max_len: max_len = l
+    print("{:^{max_len}}  ->   {:^{max_len}}".format("Santa", "Recipient", max_len=max_len+3))
+    for santa, recip in santas:
         if santa.email not in emails: continue
-        print("%s -> %s" %(santa, recip))
+        santaf = "{} <{}>".format(santa.name, santa.email)
+        recipf = "{} <{}>".format(recip.name, recip.email)
+        print("{:<{max_len}}  ->   {:<{max_len}}".format(santaf, recipf, max_len=max_len+3))
     return
     
 
