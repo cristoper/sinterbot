@@ -133,10 +133,17 @@ def generate_all(n: int, m: int = 2, bl: Blacklist = None) -> Permutation:
         p = random.choice(perms)
     return p
 
+def Dn(n: int):
+    """
+    Calculate the subfactorial of n
+    This is the same as the number of derangements that can be made from a set of size n
+    """
+    # Use Decimal to handle large n accurately (by large, I mean n>13 or so)
+    s = 0
+    for k in range(n+1):
+        s += (-1)**k/Decimal(math.factorial(k))
+    return Decimal.to_integral_exact(math.factorial(n) * s)
 
-def sub_factorial(n: int):
-    # Use Decimal to handle large n
-    return (Decimal(math.factorial(n))/Decimal(math.e)).to_integral_exact()
 
 def random_derangement(n):
     A = list(range(n))
@@ -148,8 +155,8 @@ def random_derangement(n):
                 j = random.randrange(0, i)
                 if not marked[j]: break
             A[i], A[j] = A[j], A[i] # pythonic swap with no explicit temporary space
-            p = random.uniform(0,1) # TODO correct range?
-            if p < u * sub_factorial(u-1) / sub_factorial(u+1):
+            p = random.random()
+            if p < u * Dn(u-1) / Dn(u+1):
                 marked[j] = True
                 u = u - 1
             u = u -1
@@ -166,8 +173,8 @@ def random_derangement_det(n):
             for j in remaining:
                 if not marked[j]: break
             A[i], A[j] = A[j], A[i] # pythonic swap with no explicit temporary space
-            p = random.uniform(0,1) # TODO correct range?
-            if p < u * sub_factorial(u-1) / sub_factorial(u+1):
+            p = random.random()
+            if p < u * Dn(u-1) / Dn(u+1):
                 marked[j] = True
                 u = u - 1
             u = u -1
