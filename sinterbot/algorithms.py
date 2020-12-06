@@ -106,16 +106,33 @@ def check_constraints(perm: Permutation, m: int, bl: Optional[Blacklist]) -> boo
             return False
     return check_blacklist(perm, bl)
 
-def generate_all(n: int, m: int, bl:Optional[Blacklist]) -> List[Permutation]:
-    # list of valid assignments
-    assignments: List[Permutation] = []
+def generate_backtrack(n: int) -> Permutation:
+    if n == 0: return []
+    remaining = list(range(n))
+    perm = []
 
-    perms = itertools.permutations(range(n))
-    for p in perms:
-        if check_constraints(p, m, bl):
-            assignments.append(p)
+    # backtrack until solution
+    while len(perm) < n:
+        perm.append(random.choice(remaining))
+        if not check_deranged(perm):
+            if len(remaining) == 1:
+                # we're down to one element and it is the last element
+                # just swap it with the previously chosen element to get a derangement
+                perm[-1], perm[-2] = perm[-2], perm[-1]
+                return perm
+            # undo last choice
+            perm.pop(-1)
+        else:
+            remaining.remove(perm[-1])
+    return perm
 
-    return assignments
+def generate_all(n: int, m: int = 2, bl: Blacklist = None) -> Permutation:
+    perms = list(itertools.permutations(range(n)))
+    p = random.choice(perms)
+    while not check_constraints(p, m, bl):
+        p = random.choice(perms)
+    return p
+
 
 def sub_factorial(n: int):
     # Use Decimal to handle large n
