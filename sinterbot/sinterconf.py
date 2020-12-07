@@ -209,8 +209,14 @@ class SinterConf:
             if len(self.derangement) != len(self.santas):
                 raise ValidateError("Derangement length does not match length of santa list")
 
-            if not algo.check_constraints(self.derangement, self.mincycle,
-                    self.bl_to_numeric()):
+            try:
+                valid = algo.check_constraints(self.derangement, self.mincycle,
+                    self.bl_to_numeric())
+            except ValueError:
+                # something wrong with derangement values
+                raise ValidateError("Derangement fails validation: %s" %
+                        repr(self.derangement))
+            if not valid:
                 raise ValidateError("Derangement fails validation: %s" %
                         repr(self.derangement))
 
