@@ -116,8 +116,8 @@ def generate_backtrack(n: int) -> Permutation:
         perm.append(random.choice(remaining))
         if not check_deranged(perm):
             if len(remaining) == 1:
-                # we're down to one element and it is the last element
-                # just swap it with the previously chosen element to get a derangement
+                # we're down to the last two elements just swap them to get a
+                # derangement
                 perm[-1], perm[-2] = perm[-2], perm[-1]
                 return perm
             # undo last choice
@@ -134,6 +134,19 @@ def generate_all(n: int, m: int = 2, bl: Blacklist = None) -> Permutation:
             potential.append(p)
     return random.choice(potential)
 
+def generate_rejection(n: int, m: int = 2, bl: Blacklist = None) -> Permutation:
+    """
+    Create a random derangement of [n] by first generating a random permutation
+    and rejecting it if it is not a derangement.
+    """
+    perm = list(range(n))
+    while not check_constraints(perm, m, bl):
+        # Fisher-Yates shuffle:
+        for i in range(n):
+            k = random.randrange(n-i)+i # i <= k < n
+            perm[i], perm[k] = perm[k], perm[i]
+    return perm
+
 def Dn(n: int):
     """
     Calculate the subfactorial of n
@@ -145,39 +158,31 @@ def Dn(n: int):
         s += (-1)**k/Decimal(math.factorial(k))
     return Decimal.to_integral_exact(Decimal(math.factorial(n)) * s)
 
+def rand_derangement(n: int) -> Permutation:
+    """
+    Directly generate a random derangement with uniform probability.
+    """
+    perm = list(range(n))
+    remaining = list(perm)
+    while (len(remaining)>1):
+        rand_i = random.randrange(len(remaining)-1) # random index < last
+        last = remaining[-1]
+        rand = remaining[rand_i]
 
-def random_derangement(n):
-    A = list(range(n))
-    marked = [False] * n
-    i = u = n-1
-    while u >= 1:
-        if not marked[i]:
-            while 1:
-                j = random.randrange(0, i)
-                if not marked[j]: break
-            A[i], A[j] = A[j], A[i] # pythonic swap with no explicit temporary space
-            p = random.random()
-            if p < u * Dn(u-1) / Dn(u+1):
-                marked[j] = True
-                u = u - 1
-            u = u -1
-        i = i -1
-    return A
+        # swap to join cycles
+        perm[last], perm[rand] = perm[rand], perm[last]
+        
+        # remove last from remaining
+        remaining.pop(-1)
 
-def random_derangement_det(n):
-    A = range(n)
-    marked = [False] * n
-    i = u = n-1
-    while u >= 1:
-        if not marked[i]:
-            remaining = random.sample(range(i), i)
-            for j in remaining:
-                if not marked[j]: break
-            A[i], A[j] = A[j], A[i] # pythonic swap with no explicit temporary space
-            p = random.random()
-            if p < u * Dn(u-1) / Dn(u+1):
-                marked[j] = True
-                u = u - 1
-            u = u -1
-        i = i -1
-    return A
+        p = random.random() # uniform [0, 1)
+        l = len(remaining)
+        if l > 30:
+            # fast approximation for large i
+            prob = 1/l
+        else:
+            prob = l * Dn(l-1)/Dn(l+1)
+        if p < prob:
+            # Close the cycle
+            remaining.pop(rand_i)
+    return perm
