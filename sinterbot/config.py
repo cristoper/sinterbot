@@ -38,7 +38,7 @@ class Conf:
         """
 
         CommentPat = re.compile(r'^\s*#.*')
-        LinePat = re.compile(r'^\s*(.+):\s*(.+)\s*')
+        LinePat = re.compile(r'^\s*(.+):\s*(.+)?\s*')
 
         with self.path.open() as f:
             for lineno, line in enumerate(f):
@@ -57,5 +57,7 @@ class Conf:
                 if len(g) != 2:
                     yield KeyValue(lineno, error="No value found")
                     continue
+                if g[1] == None:
+                    g = (g[0], "")
                 
                 yield KeyValue(lineno, g[0], g[1], error=None)

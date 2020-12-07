@@ -11,6 +11,7 @@ class TestParseSMTP(unittest.TestCase):
         c.parse()
         self.assertEqual(c.server, 'smtp.email.tld')
         self.assertEqual(c.user, 'smtpuser@email.tld')
+        self.assertEqual(c.email, 'smtpuser@email.tld')
         self.assertEqual(c.password, 'secret')
         self.assertEqual(c.port, '587')
 

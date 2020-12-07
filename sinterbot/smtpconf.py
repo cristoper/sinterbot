@@ -15,6 +15,7 @@ class SMTPConf:
         self.path = path
         self.server: str = ""
         self.port = 587
+        self.email: str = ""
         self.user: str = ""
         self.password = os.environ.get("sinter_smtp_pass")
 
@@ -37,6 +38,11 @@ class SMTPConf:
                 self.server = val
             elif prefix == "smtpport":
                 self.port = val
+            elif prefix == "smtpemail":
+                self.email = val
+                if not self.user:
+                    # smtpuser defaults to smtpemail
+                    self.user = val
             elif prefix == "smtpuser":
                 self.user = val
             elif prefix == "smtppass":
