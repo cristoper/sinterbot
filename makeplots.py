@@ -5,7 +5,6 @@ from collections import defaultdict
 from scipy.stats import chisquare # type:ignore
 from typing import Dict
 import time
-import math
 
 SEED=352215382956615399
 ITERATIONS=10000
