@@ -5,4 +5,4 @@ Santa C:user3@email.tld
 Santa D:user4@email.tld
 Santa E:user5@email.tld
 mincycle:3
-derangement:(3, 2, 0, 4, 1)
+derangement:[3, 2, 0, 4, 1]

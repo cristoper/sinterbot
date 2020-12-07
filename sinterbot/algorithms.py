@@ -15,8 +15,19 @@ MT has a period length of 2^19937 - 1, which means it can be used to uniformly s
 """    
 
 # For the typechecker
-Permutation = Sequence[int]
+Permutation = List[int]
 Blacklist = List[Tuple[int, int]]
+
+def Dn(n: int):
+    """
+    Calculate the subfactorial of n
+    This is the same as the number of derangements that can be made from a set of size n
+    """
+    # Use Decimal to handle large n accurately (by large, I mean n>13 or so)
+    s = 0
+    for k in range(n+1):
+        s += (-1)**k/Decimal(math.factorial(k))
+    return Decimal.to_integral_exact(Decimal(math.factorial(n)) * s)
 
 def decompose(perm: Permutation) -> List[Optional[List[int]]]:
     """
@@ -107,6 +118,9 @@ def check_constraints(perm: Permutation, m: int, bl: Optional[Blacklist]) -> boo
     return check_blacklist(perm, bl)
 
 def generate_backtrack(n: int) -> Permutation:
+    """
+    Generate a random derangement by backtracking. THIS IS BIASED.
+    """
     if n == 0: return []
     remaining = list(range(n))
     perm: List[int] = []
@@ -126,37 +140,31 @@ def generate_backtrack(n: int) -> Permutation:
             remaining.remove(perm[-1])
     return perm
 
-def generate_all(n: int, m: int = 2, bl: Blacklist = None) -> Permutation:
+def generate_all(n: int) -> Permutation:
+    """
+    Generates all possible permutations saving the derangements, and then
+    returns a random derangement. SLOW AND MEMORY HOG.
+    """
     potential = []
     perms = itertools.permutations(range(n))
     for p in perms:
-        if check_constraints(p, m, bl):
-            potential.append(p)
+        plist = list(p)
+        if check_deranged(plist):
+            potential.append(plist)
     return random.choice(potential)
 
-def generate_rejection(n: int, m: int = 2, bl: Blacklist = None) -> Permutation:
+def generate_rejection(n: int) -> Permutation:
     """
     Create a random derangement of [n] by first generating a random permutation
     and rejecting it if it is not a derangement.
     """
     perm = list(range(n))
-    while not check_constraints(perm, m, bl):
+    while not check_deranged(perm):
         # Fisher-Yates shuffle:
         for i in range(n):
             k = random.randrange(n-i)+i # i <= k < n
             perm[i], perm[k] = perm[k], perm[i]
     return perm
-
-def Dn(n: int):
-    """
-    Calculate the subfactorial of n
-    This is the same as the number of derangements that can be made from a set of size n
-    """
-    # Use Decimal to handle large n accurately (by large, I mean n>13 or so)
-    s = 0
-    for k in range(n+1):
-        s += (-1)**k/Decimal(math.factorial(k))
-    return Decimal.to_integral_exact(Decimal(math.factorial(n)) * s)
 
 def rand_derangement(n: int) -> Permutation:
     """
@@ -185,4 +193,17 @@ def rand_derangement(n: int) -> Permutation:
         if p < prob:
             # Close the cycle
             remaining.pop(rand_i)
+    return perm
+
+def constrained(n: int, m: int = 2, bl: Blacklist = None) -> Permutation:
+    """
+    Return a random derangement given the constraints that minimum cycle must
+    be >= m and neither pair in any of the pairs in bl may follow each other in
+    a cycle (ie, for two santas in bl, niether can be assigned to each other).
+    """
+    # TODO: check to make sure this can return given bl!
+    if m > n: return []
+    perm = generate_rejection(n)
+    while not check_constraints(perm, m, bl):
+        perm = generate_rejection(n)
     return perm

@@ -42,10 +42,10 @@ def test_func(func: str, num: int, ylim: int = None):
     mincount = min(counts)
     minindex = counts.index(mincount)
     print("Min {} = {}".format(perms[minindex], mincount))
-    print(chisquare(list(data.values())))
+    print(chisquare(list(data.values()), [float(ITERATIONS/num)]*int(num)))
 
 if __name__ == "__main__":
-    derange_funcs =['generate_backtrack', 'generate_all', 'generate_rejection']
+    derange_funcs =['generate_backtrack', 'generate_all', 'generate_rejection', 'rand_derangement']
     perm_funcs = ['shuffle', 'shuffle_python']
     for f in derange_funcs:
         print("Running {}".format(f))

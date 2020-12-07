@@ -135,8 +135,7 @@ class SinterConf:
         n = len(self.santas)
         if n < 2: return None
         bl = self.bl_to_numeric()
-        #TODO: use more efficient algorithm
-        self.derangement = algo.generate_all(n, self.mincycle, bl)
+        self.derangement = algo.constrained(n, self.mincycle, bl)
         return self.derangement
 
     def save_derangement(self):
@@ -244,7 +243,7 @@ class SinterConf:
                 self.bl.add_emails((first, second))
             elif prefix == "derangement":
                 self.derangement = ast.literal_eval(val)
-                if not isinstance(self.derangement, tuple):
+                if not isinstance(self.derangement, list):
                     raise ParseError(kv.lineno)
             else:
                 # no pre-defined prefix, assume this is a santa name
