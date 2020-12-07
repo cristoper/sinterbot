@@ -127,11 +127,12 @@ def generate_backtrack(n: int) -> Permutation:
     return perm
 
 def generate_all(n: int, m: int = 2, bl: Blacklist = None) -> Permutation:
-    perms = list(itertools.permutations(range(n)))
-    p = random.choice(perms)
-    while not check_constraints(p, m, bl):
-        p = random.choice(perms)
-    return p
+    potential = []
+    perms = itertools.permutations(range(n))
+    for p in perms:
+        if check_constraints(p, m, bl):
+            potential.append(p)
+    return random.choice(potential)
 
 def Dn(n: int):
     """
