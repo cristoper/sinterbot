@@ -136,8 +136,7 @@ class SinterConf:
         if n < 2: return None
         bl = self.bl_to_numeric()
         #TODO: use more efficient algorithm
-        valid = algo.generate_all(n, self.mincycle, bl)
-        self.derangement = random.choice(valid)
+        self.derangement = algo.generate_all(n, self.mincycle, bl)
         return self.derangement
 
     def save_derangement(self):

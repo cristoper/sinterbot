@@ -109,7 +109,7 @@ def check_constraints(perm: Permutation, m: int, bl: Optional[Blacklist]) -> boo
 def generate_backtrack(n: int) -> Permutation:
     if n == 0: return []
     remaining = list(range(n))
-    perm = []
+    perm: List[int] = []
 
     # backtrack until solution
     while len(perm) < n:
@@ -143,7 +143,7 @@ def Dn(n: int):
     s = 0
     for k in range(n+1):
         s += (-1)**k/Decimal(math.factorial(k))
-    return Decimal.to_integral_exact(math.factorial(n) * s)
+    return Decimal.to_integral_exact(Decimal(math.factorial(n)) * s)
 
 
 def random_derangement(n):
