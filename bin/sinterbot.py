@@ -157,7 +157,7 @@ def send(args: argparse.Namespace):
 
         try:
             server.send_message(email, from_addr=smtp.email, to_addrs=santa.email)
-            print("Send message to {}!".format(santa.email))
+            print("Sent message to {}!".format(santa.email))
         except smtplib.SMTPException as e:
             logging.error("There was an SMTP error while attempting to send the email to {}. Error: {}".format(santa.email, e))
             pass
