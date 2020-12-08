@@ -153,9 +153,9 @@ def send(args: argparse.Namespace):
 
         {}
 
-        Merry Christmas!
+        Merry Christmas! 
         --
-        Sinterbot2020
+        Sinterbot2020 🎁
         https://github.com/cristoper/sinterbot/
         """.format(santa.name, recipient.name)
         email.set_content(textwrap.dedent(msg))
