@@ -2,7 +2,7 @@ import random
 import math
 import itertools
 from decimal import Decimal
-from typing import Optional, List, Tuple, Sequence
+from typing import Optional, List, Tuple
 
 """From random documentation:
 
