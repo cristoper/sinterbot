@@ -19,6 +19,7 @@ pip install sinterbot
 First create a config file with a list of participants' names and email addresses. The config file may also specify constraints for minimum cycle length and a blacklist. See [sample.conf](https://github.com/cristoper/sinterbot/blob/master/sample.conf) for a full example:
 
 ```xmas2020.conf
+# xmas2020.conf
 Santa A: user1@email.tld
 Santa B: user2@email.tld
 Santa C: user3@email.tld
@@ -52,7 +53,7 @@ Send message to user5@email.tld!
 Before you can run the `sinterbot send` you need to create a file for your SMTP credentials:
 
 ```sh
-## SMTP Credentials
+# smtp.conf
 #
 # These settings are used to send the assignment emails. SMTPEmail will appear
 # as the 'From:' address in the sent emails
