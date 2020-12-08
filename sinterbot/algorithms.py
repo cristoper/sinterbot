@@ -117,6 +117,14 @@ def check_constraints(perm: Permutation, m: int, bl: Optional[Blacklist]) -> boo
             return False
     return check_blacklist(perm, bl)
 
+def all_derangements(n: int) -> Permutation:
+    """
+    Generator that yields all derangements of size n.
+    """
+    perms = itertools.permutations(range(n))
+    for p in perms:
+        if check_deranged(p): yield(p)
+            
 def generate_backtrack(n: int) -> Permutation:
     """
     Generate a random derangement by backtracking. THIS IS BIASED.
