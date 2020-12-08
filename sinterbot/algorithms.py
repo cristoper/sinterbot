@@ -2,7 +2,7 @@ import random
 import math
 import itertools
 from decimal import Decimal
-from typing import Optional, List, Tuple
+from typing import Optional, List, Tuple, Iterator
 
 """From random documentation:
 
@@ -117,13 +117,14 @@ def check_constraints(perm: Permutation, m: int, bl: Optional[Blacklist]) -> boo
             return False
     return check_blacklist(perm, bl)
 
-def all_derangements(n: int) -> Permutation:
+def all_derangements(n: int) -> Iterator[Permutation]:
     """
     Generator that yields all derangements of size n.
     """
     perms = itertools.permutations(range(n))
     for p in perms:
-        if check_deranged(p): yield(p)
+        plist = list(p)
+        if check_deranged(plist): yield(plist)
             
 def generate_backtrack(n: int) -> Permutation:
     """
