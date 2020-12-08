@@ -124,6 +124,7 @@ def send(args: argparse.Namespace):
     server = smtplib.SMTP(smtp.server, port=smtp.port)
     server.starttls()
     try:
+        if not smtp.password: smtp.password = ""
         server.login(smtp.user, smtp.password)
     except smtplib.SMTPException as e:
         logging.error("Error logging in. Check your SMTP credentials in {}. Error: {}".format(smtp_path, e))
