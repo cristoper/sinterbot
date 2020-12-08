@@ -1,6 +1,6 @@
-from distutils.core import setup
+import setuptools
 
-setup(
+setuptools.setup(
         name='sinterbot',
         version='0.1.0',
         author_email='chris@catswhisker.xyz',
