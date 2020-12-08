@@ -37,7 +37,7 @@ Derangement info successfully added to config file.
 Use `sinterbot send sample.conf -c smtp.conf` to send emails!
 ```
 
-`sinterbot` will not allow you to re-derange a config file without passing the `--force`` flag.
+`sinterbot` will not allow you to re-derange a config file without passing the `--force` flag.
 
 Now if you want you can view the secret santa assignments with `sinterbot view xmas2020.conf`. However, if you're a participant that would ruin the suprise for you! Instead you can email each person their assignment without ever seeing them yourself:
 
