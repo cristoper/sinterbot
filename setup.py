@@ -5,7 +5,7 @@ with open("README.md", "r") as f:
 
 setuptools.setup(
         name='sinterbot',
-        version='0.1.0',
+        version='0.1.1',
         author='cristoper',
         author_email='chris@catswhisker.xyz',
         url='https://github.com/cristoper/sinterbot',
