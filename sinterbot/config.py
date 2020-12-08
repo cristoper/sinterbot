@@ -21,12 +21,14 @@ except ImportError as e:
     log.error("Can't import pathlib. Make sure you have python version >= 3.4")
     raise e
 
+
 class KeyValue:
     def __init__(self, lineno: int, key: str = "", value: str = "", error: str = None):
         self.key = key
         self.value = value
         self.lineno = lineno
         self.error = error
+
 
 class Conf:
     def __init__(self, path: str):
@@ -42,7 +44,7 @@ class Conf:
 
         with self.path.open() as f:
             for lineno, line in enumerate(f):
-                lineno += 1 # start lines at 1
+                lineno += 1  # start lines at 1
                 if line == "\n": continue
                 if CommentPat.match(line): continue
                 m = LinePat.match(line)
@@ -57,7 +59,7 @@ class Conf:
                 if len(g) != 2:
                     yield KeyValue(lineno, error="No value found")
                     continue
-                if g[1] == None:
+                if g[1] is None:
                     g = (g[0], "")
-                
+
                 yield KeyValue(lineno, g[0], g[1], error=None)

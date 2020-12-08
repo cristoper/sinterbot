@@ -3,7 +3,6 @@ import ast
 import pathlib
 import shutil
 import re
-import random
 import sinterbot.algorithms as algo
 from typing import List, Tuple, Optional, Dict
 import logging
@@ -22,6 +21,7 @@ class ValidateError(Exception):
 
     def __str__(self):
         return self.msg
+
 
 Blacklist_T = List[Tuple[str, str]]
 class Blacklist:
@@ -103,7 +103,7 @@ class SinterConf:
 
         # Set defaults
         self.derangement: Optional[algo.Permutation] = None
-        self.mincycle = 2 # minimum cycle length constraint
+        self.mincycle = 2  # minimum cycle length constraint
         self.santas = SantaList()
         self.bl = Blacklist()
 
@@ -169,7 +169,7 @@ class SinterConf:
         """
         if self.derangement is None:
             self.derange()
-        assert self.derangement is not None # make mypy happy
+        assert self.derangement is not None  # make mypy happy
         assignment = {}
         for santa, recipient in enumerate(self.derangement):
             assignment[self.santas[santa]] = self.santas[recipient]

@@ -9,6 +9,7 @@ import textwrap
 import smtplib
 import datetime
 
+
 def parse_args():
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(dest='subcommand', required=True)
@@ -33,8 +34,8 @@ def parse_args():
     viewparser.add_argument('path', help='Path to config file')
     viewparser.add_argument('-u', '--user', dest='email', help='Show only the recipient assigned to the given email address(es).', action='append')
 
-
     return parser.parse_args()
+
 
 def parse_config(path: str) -> config.SinterConf:
     """
@@ -53,6 +54,7 @@ def parse_config(path: str) -> config.SinterConf:
         sys.exit(1)
     return c
 
+
 def derange(args: argparse.Namespace):
     path = args.path
     c = parse_config(path)
@@ -65,7 +67,8 @@ def derange(args: argparse.Namespace):
     c.save_derangement()
     print("Derangement info successfully added to config file.\nUse `sinterbot send %s -c smtp.conf` to send emails!" % path)
 
-def check(args:argparse.Namespace):
+
+def check(args: argparse.Namespace):
     path = args.path
     c = parse_config(path)
     if c.derangement:
@@ -73,6 +76,7 @@ def check(args:argparse.Namespace):
     else:
         print("Config file does not contain derangement. Try running `sinterbot derange %s" % path)
     return
+
 
 def view(args: argparse.Namespace):
     path = args.path
@@ -98,7 +102,8 @@ def view(args: argparse.Namespace):
         recipf = "{} <{}>".format(recip.name, recip.email)
         print("{:<{max_len}}  ->   {:<{max_len}}".format(santaf, recipf, max_len=max_len+3))
     return
-    
+
+
 def send(args: argparse.Namespace):
     path = args.path
     smtp_path = args.smtppath
@@ -137,12 +142,12 @@ def send(args: argparse.Namespace):
         emails = c.santas.emails()
 
     for santa, recipient in assignments.items():
-        if santa.email not in emails: continue # handle -u flags
+        if santa.email not in emails: continue  # handle -u flags
         email = EmailMessage()
         email['Subject'] = "Your {} Secret Santa Assignment".format(year)
         email['From'] = smtp.email
         email['To'] = santa.email
-        msg ="""\
+        msg = """\
         {},
         This year you are the randomly assigned secret santa for:
 
@@ -162,6 +167,7 @@ def send(args: argparse.Namespace):
             logging.error("There was an SMTP error while attempting to send the email to {}. Error: {}".format(santa.email, e))
             pass
     server.quit()
+
 
 def main():
     args = parse_args()

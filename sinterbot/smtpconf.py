@@ -5,10 +5,12 @@ import logging
 # TODO enable/disable logging
 log = logging.getLogger(__name__)
 
+
 class ParseError(Exception):
     """Used for exceptions raised during parsing"""
     def __init__(self, lineno: int):
         self.line = lineno
+
 
 class SMTPConf:
     def __init__(self, path: str):
@@ -49,4 +51,3 @@ class SMTPConf:
                 self.password = val
             else:
                 log.error("Unrecognized key on line %d, ignoring: %s" % (kv.lineno, kv.key))
-
