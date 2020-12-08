@@ -70,7 +70,7 @@ SMTPServer: smtp.gmail.com
 SMTPPort: 587
 ```  
 
-(If you do not know what SMTP server to use but you have a gmail account, you can [use gmail's SMTP server](https://www.digitalocean.com/community/tutorials/how-to-use-google-s-smtp-server) using values like those exemplified above.)
+(If you do not know what SMTP server to use but you have a gmail account, you can [use gmail's SMTP server](https://www.digitalocean.com/community/tutorials/how-to-use-google-s-smtp-server) using values like those exemplified above (you will need to [generate an app password](https://support.google.com/accounts/answer/6010255?hl=en).)
 
 To get full usage info run `sinterbot --help`. You can also pass `--help` to each subcommand:
 ```sh
