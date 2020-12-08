@@ -1,4 +1,5 @@
 # Sinterbot2020
+![Image of Santa from Futurama](https://catswhisker.xyz/log/2020/12/7/deranged_sinterklaas/XmasStory.png)
 
 `sinterbot` is a little command line program (Python 3.5+) that helps to manage secret santa assignments. With `sinterbot` you can generate a valid secret santa assignment for a list of people and email each person their assigned gift recipient without ever revealing to anybody (including the operator of `sinterbot`) the full secret list of assignments.
 
