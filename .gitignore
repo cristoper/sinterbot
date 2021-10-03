@@ -1,6 +1,8 @@
-__pycache__/
+/__pycache__
 *.pyc
-venv/
+/venv
 *egg-info
-test/test.deranged
+/test/test.deranged
 generate_*.png
+/dist
+/build
