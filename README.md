@@ -28,7 +28,7 @@ Santa D: user4@email.tld
 Santa E: user5@email.tld
 ```
 
-The format is `Name: emailaddress`. Only the email addresses need to be unique.
+The format is `Name: emailaddress`. Only the email addresses needs to be unique.
 
 Then run `sinterbot derange` to compute a valid assignment and save it to the config file:
 
